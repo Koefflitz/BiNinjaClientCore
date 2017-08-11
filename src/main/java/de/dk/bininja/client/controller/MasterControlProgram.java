@@ -25,7 +25,6 @@ import de.dk.bininja.net.packet.download.DownloadCancelPacket;
 import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.ui.cli.Cli;
 import de.dk.util.channel.Channel;
-import de.dk.util.channel.ChannelClosedException;
 import de.dk.util.channel.ChannelDeclinedException;
 import de.dk.util.channel.ChannelManager;
 import de.dk.util.net.ConnectionListener;
@@ -170,7 +169,7 @@ public class MasterControlProgram implements ProcessorController,
          try {
             downloadChannel.send(new DownloadCancelPacket());
             close(downloadChannel);
-         } catch (IllegalArgumentException | ChannelClosedException | IOException e) {
+         } catch (IllegalArgumentException | IOException e) {
             LOGGER.warn("Could not cancel download " + metadata, e);
          }
          return false;

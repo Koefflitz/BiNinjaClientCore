@@ -21,7 +21,6 @@ import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.net.packet.download.DownloadReadyPacket;
 import de.dk.util.StringUtils;
 import de.dk.util.channel.Channel;
-import de.dk.util.channel.ChannelClosedException;
 
 /**
  * @author David Koettlitz
@@ -86,7 +85,7 @@ public class Logic {
    private void cancelDownload(Channel<DownloadPacket> channel, String msg) {
       try {
          channel.send(new DownloadCancelPacket(msg));
-      } catch (IOException | ChannelClosedException e) {
+      } catch (IOException e) {
          LOGGER.warn("Error canceling the download.", e);
       }
    }
