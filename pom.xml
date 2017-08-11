@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<project
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>de.dk.bininja</groupId>
+      <artifactId>bininja-client</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+   </parent>
+   <artifactId>bininja-client-core</artifactId>
+   <name>BiNinjaClientCore</name>
+
+   <dependencies>
+      <dependency>
+         <groupId>de.dk.bininja</groupId>
+         <artifactId>bininja-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>de.dk</groupId>
+         <artifactId>util</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-slf4j-impl</artifactId>
+      </dependency>
+   </dependencies>
+</project>
