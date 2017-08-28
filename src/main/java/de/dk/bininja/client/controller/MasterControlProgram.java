@@ -30,7 +30,7 @@ import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.ui.cli.Cli;
 import de.dk.util.channel.Channel;
 import de.dk.util.channel.ChannelDeclinedException;
-import de.dk.util.channel.ChannelManager;
+import de.dk.util.channel.Multiplexer;
 import de.dk.util.net.ConnectionListener;
 import de.dk.util.net.security.SessionKeyArrangement;
 
@@ -51,7 +51,7 @@ public class MasterControlProgram implements ProcessorController,
    private UI ui;
 
    private Base64Connection connection;
-   private ChannelManager channelManager;
+   private Multiplexer channelManager;
 
    private PublicKey publicKey;
 
@@ -166,7 +166,7 @@ public class MasterControlProgram implements ProcessorController,
 
       LOGGER.debug("Sending initial message, to tell the server, that I am a download client.");
       connection.addListener(this);
-      this.channelManager = connection.attachChannelManager();
+      this.channelManager = connection.attachMultiplexer();
       connection.start();
       LOGGER.info("Connection with " + host + " established");
       ui.setConnected(true);
