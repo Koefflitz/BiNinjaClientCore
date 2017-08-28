@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.PublicKey;
 import java.util.concurrent.TimeoutException;
+
+import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,7 @@ import de.dk.bininja.net.ConnectionRefusedException;
 import de.dk.bininja.net.ConnectionRequest;
 import de.dk.bininja.net.ConnectionType;
 import de.dk.bininja.net.DownloadListener;
+import de.dk.bininja.net.SessionKeyBuilder;
 import de.dk.bininja.net.packet.download.DownloadCancelPacket;
 import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.ui.cli.Cli;
@@ -28,7 +32,7 @@ import de.dk.util.channel.Channel;
 import de.dk.util.channel.ChannelDeclinedException;
 import de.dk.util.channel.ChannelManager;
 import de.dk.util.net.ConnectionListener;
-import de.dk.util.net.ReadingException;
+import de.dk.util.net.security.SessionKeyArrangement;
 
 /**
  * @author David Koettlitz
@@ -36,7 +40,8 @@ import de.dk.util.net.ReadingException;
  */
 public class MasterControlProgram implements ProcessorController,
                                              UIController,
-                                             ConnectionListener {
+                                             ConnectionListener,
+                                             SessionKeyBuilder {
    private static final Logger LOGGER = LoggerFactory.getLogger(MasterControlProgram.class);
 
    private static final long CONNECTION_TIMEOUT = 8000;
@@ -48,6 +53,8 @@ public class MasterControlProgram implements ProcessorController,
    private Base64Connection connection;
    private ChannelManager channelManager;
 
+   private PublicKey publicKey;
+
    private boolean stopping = false;
 
    public MasterControlProgram() {
@@ -57,6 +64,10 @@ public class MasterControlProgram implements ProcessorController,
    public void start(Logic processor, UI ui, ParsedArguments args) {
       this.processor = processor;
       this.ui = ui;
+
+      if (args.isSecure()) {
+         this.publicKey = args.getSecArgs().getPublicKey();
+      }
 
       int port = args.isPortSpecified() ? args.getPort() : Base64Connection.PORT;
       if (args.getHost() != null) {
@@ -101,6 +112,13 @@ public class MasterControlProgram implements ProcessorController,
          ui.start();
    }
 
+   @Override
+   public SecretKey buildSessionKey(SessionKeyArrangement builder) throws IOException {
+      return builder.setGenerateSessionKey(true)
+                    .setPublicKey(publicKey)
+                    .arrange();
+   }
+
    private void executeScript(File script, Cli<?> cli) throws IOException {
       BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(script)));
 
@@ -128,7 +146,7 @@ public class MasterControlProgram implements ProcessorController,
       }
 
       LOGGER.info("Establishing connection to \"" + host + "\".");
-      ConnectionRequest request = new ConnectionRequest(host, port);
+      ConnectionRequest request = new ConnectionRequest(host, port, this);
 
       try {
          this.connection = request.request(ConnectionType.CLIENT, CONNECTION_TIMEOUT);
@@ -208,14 +226,6 @@ public class MasterControlProgram implements ProcessorController,
    @Override
    public void setDownloadTargetTo(DownloadMetadata metadata) {
       ui.setDownloadTargetTo(metadata);
-   }
-
-   @Override
-   public void readingError(ReadingException e) {
-      LOGGER.warn(e.getMessage(), e);
-      ui.alert("Hackerwarnung!"
-               + "Eine unbekannte Nachricht ist soeben eingegangen!"
-               + "Versucht da jemand Nachrichten in diese Anwendung einzuschleusen?");
    }
 
    private void close(Channel<?> channel) {

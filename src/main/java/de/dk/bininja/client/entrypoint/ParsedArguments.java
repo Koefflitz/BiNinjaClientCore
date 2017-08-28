@@ -2,6 +2,8 @@ package de.dk.bininja.client.entrypoint;
 
 import java.io.File;
 
+import de.dk.bininja.opt.ParsedSecurityArguments;
+
 /**
  * @author David Koettlitz
  * <br>Erstellt am 07.08.2017
@@ -12,6 +14,8 @@ public class ParsedArguments {
    private String command;
    private File script;
    private boolean cli;
+
+   private ParsedSecurityArguments secArgs;
 
    public ParsedArguments() {
 
@@ -64,4 +68,17 @@ public class ParsedArguments {
    public void setCli(boolean cli) {
       this.cli = cli;
    }
+
+   public ParsedSecurityArguments getSecArgs() {
+      return secArgs;
+   }
+
+   public void setSecArgs(ParsedSecurityArguments secArgs) {
+      this.secArgs = secArgs;
+   }
+
+   public boolean isSecure() {
+      return secArgs != null;
+   }
+
 }

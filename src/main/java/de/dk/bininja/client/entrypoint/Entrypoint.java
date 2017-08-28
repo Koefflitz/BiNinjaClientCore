@@ -14,6 +14,7 @@ import de.dk.bininja.client.controller.MasterControlProgram;
 import de.dk.bininja.client.core.Logic;
 import de.dk.bininja.client.ui.UI;
 import de.dk.bininja.client.ui.UIController;
+import de.dk.bininja.opt.ParsedSecurityArguments;
 import de.dk.util.opt.ArgumentModel;
 import de.dk.util.opt.ArgumentParser;
 import de.dk.util.opt.ArgumentParserBuilder;
@@ -59,39 +60,44 @@ public class Entrypoint {
             return;
          } else {
             System.out.println("GUI class not available.");
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-
-            while (ui == null) {
-               System.out.print("Continue in command line mode? (y/n) ");
-               String input;
-               try {
-                  input = in.readLine();
-               } catch (IOException ex) {
-                  LOGGER.error("Could not read from stdin", e);
-                  return;
-               }
-               if (input == null)
-                  return;
-
-               if (input.equals("n") || input.equals("no"))
-                  return;
-
-               if (input.equals("y") || input.equals("yes")) {
-                  try {
-                     ui = loadUI(COMMANDLINE_UI_CLASSNAME, mcp);
-                  } catch (ReflectiveOperationException exeption) {
-                     String msg = "Could not load Commandline UI.";
-                     LOGGER.error(msg, e);
-                     System.err.println(msg);
-                     System.exit(1);
-                     return;
-                  }
-               }
-            }
+            ui = promptCliAsPlanB(mcp);
          }
       }
 
+      if (ui == null)
+         System.exit(0);
+
       mcp.start(processor, ui, parsedArgs);
+   }
+
+   private static UI promptCliAsPlanB(MasterControlProgram mcp) {
+      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+      while (true) {
+         System.out.print("Continue in command line mode? (y/n) ");
+         String input;
+         try {
+            input = in.readLine();
+         } catch (IOException ex) {
+            LOGGER.error("Could not read from stdin", ex);
+            return null;
+         }
+         if (input == null)
+            return null;
+
+         if (input.equals("n") || input.equals("no"))
+            return null;
+
+         if (input.equals("y") || input.equals("yes")) {
+            try {
+               return loadUI(COMMANDLINE_UI_CLASSNAME, mcp);
+            } catch (ReflectiveOperationException exeption) {
+               LOGGER.error("Could not load ui " + COMMANDLINE_UI_CLASSNAME, exeption);
+               System.err.println("Jar file corrupt. UI class " + COMMANDLINE_UI_CLASSNAME + " not found!");
+               System.exit(1);
+               return null;
+            }
+         }
+      }
    }
 
    private static UI loadUI(String uiClassName, MasterControlProgram mcp) throws ReflectiveOperationException {
@@ -115,6 +121,8 @@ public class Entrypoint {
       ArgumentParserBuilder builder = ArgumentParserBuilder.begin();
       for (Option opt : Option.values())
          opt.build(builder);
+
+      ParsedSecurityArguments.build(builder);
 
       ArgumentParser parser = builder.buildAndGet();
       ArgumentModel result;
@@ -150,6 +158,14 @@ public class Entrypoint {
          parsedArgs.setScript(script);
       }
       parsedArgs.setCommand(result.getOptionValue(Option.COMMAND.getLongKey()));
+
+      try {
+         parsedArgs.setSecArgs(ParsedSecurityArguments.parse(result.getCommandValue(ParsedSecurityArguments.NAME)));
+      } catch (IOException e) {
+         System.out.println(e.getMessage());
+         throw new ArgumentParseException(e);
+      }
+
       return parsedArgs;
    }
 }
