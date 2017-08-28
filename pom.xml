@@ -6,7 +6,7 @@
    <parent>
       <groupId>de.dk.bininja</groupId>
       <artifactId>bininja-client</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>00.00.02-SNAPSHOT</version>
    </parent>
    <artifactId>bininja-client-core</artifactId>
    <name>BiNinjaClientCore</name>
