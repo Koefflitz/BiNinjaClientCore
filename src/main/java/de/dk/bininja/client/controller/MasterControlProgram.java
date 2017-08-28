@@ -114,6 +114,9 @@ public class MasterControlProgram implements ProcessorController,
 
    @Override
    public SecretKey buildSessionKey(SessionKeyArrangement builder) throws IOException {
+      if (publicKey == null)
+         return null;
+
       return builder.setGenerateSessionKey(true)
                     .setPublicKey(publicKey)
                     .arrange();
@@ -146,7 +149,11 @@ public class MasterControlProgram implements ProcessorController,
       }
 
       LOGGER.info("Establishing connection to \"" + host + "\".");
-      ConnectionRequest request = new ConnectionRequest(host, port, this);
+      ConnectionRequest request;
+      if (publicKey == null)
+         request = new ConnectionRequest(host, port);
+      else
+         request = new ConnectionRequest(host, port, this);
 
       try {
          this.connection = request.request(ConnectionType.CLIENT, CONNECTION_TIMEOUT);
