@@ -12,7 +12,7 @@ import de.dk.util.opt.OptionBuilder;
  * <br>Erstellt am 07.08.2017
  */
 public enum Option {
-   HEADLESS('h', "headless", "Start the application in headless mode as a command line tool without gui."),
+   HEADLESS('c', "headless", "Start the application in headless mode as a command line tool without gui."),
    HOST('H',
         "host",
         "The host to connect to. If this option is specified, the application will connect to the host at startup.",
