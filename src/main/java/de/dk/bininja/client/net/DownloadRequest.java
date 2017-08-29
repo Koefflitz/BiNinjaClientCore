@@ -33,16 +33,23 @@ public class DownloadRequest implements ChannelListener<DownloadPacket> {
       channel.addListener(this);
    }
 
-   public DownloadHeaderPacket request() throws IOException, InterruptedException, TimeoutException {
+   public DownloadHeaderPacket request() throws IOException,
+                                                InterruptedException,
+                                                TimeoutException {
       return request(DEFAULT_TIMEOUT);
    }
 
-   public synchronized DownloadHeaderPacket request(long timeout) throws IOException, InterruptedException, TimeoutException {
+   public synchronized DownloadHeaderPacket request(long timeout) throws IOException,
+                                                                         InterruptedException,
+                                                                         TimeoutException {
+      DownloadRequestPacket requestPacket = new DownloadRequestPacket(url);
+      LOGGER.debug("Sending " + requestPacket + " to the server");
       try {
-         channel.send(new DownloadRequestPacket(url));
+         channel.send(requestPacket);
+         LOGGER.debug("Waiting for the download header from the server.");
          wait(timeout);
          if (header == null)
-            throw new TimeoutException();
+            throw new TimeoutException("Server did not respond");
 
          return header;
       } finally {
@@ -53,11 +60,18 @@ public class DownloadRequest implements ChannelListener<DownloadPacket> {
    @Override
    public synchronized void received(DownloadPacket packet) {
       if (!(packet instanceof DownloadHeaderPacket)) {
-         LOGGER.warn("DownloadRequest received a DownloadPacket, that was not the header: " + packet);
+      }
+
+      try {
+         this.header = (DownloadHeaderPacket) packet;
+      } catch (ClassCastException e) {
+         String errorMsg = "DownloadRequest received a DownloadPacket, "
+                           + "that was not the header: " + packet;
+         LOGGER.warn(errorMsg, e);
          return;
       }
 
-      this.header = (DownloadHeaderPacket) packet;
+      LOGGER.debug("Received the download header: " + header);
       notify();
    }
 

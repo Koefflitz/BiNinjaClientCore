@@ -102,7 +102,6 @@ public class ClientDownload extends Download {
       try {
          received(packet.getPayload().length);
          queue.put(packet.getPayload());
-//         LOGGER.debug("Received another " + packet.getPayload().length + " bytes from the server");
       } catch (InterruptedException e) {
          // Nothing to do here
       }

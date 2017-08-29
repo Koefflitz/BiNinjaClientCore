@@ -62,12 +62,13 @@ public class MasterControlProgram implements ProcessorController,
    }
 
    public void start(Logic processor, UI ui, ParsedArguments args) {
+      LOGGER.debug("BiNinjaClient starting up.");
+
       this.processor = processor;
       this.ui = ui;
 
-      if (args.isSecure()) {
+      if (args.isSecure())
          this.publicKey = args.getSecArgs().getPublicKey();
-      }
 
       int port = args.isPortSpecified() ? args.getPort() : Base64Connection.PORT;
       if (args.getHost() != null) {
@@ -84,13 +85,7 @@ public class MasterControlProgram implements ProcessorController,
       if (args.getCommand() != null) {
          Cli<?> cli = (Cli<?>) ui;
          cli.enter(args.getCommand());
-         try {
-            processor.waitForDownloads();
-         } catch (InterruptedException e) {
-            LOGGER.warn("Interrupted while waiting for remaining downloads to finish.");
-         }
          exit();
-         return;
       } else if (args.getScript() != null) {
          try {
             executeScript(args.getScript(), (Cli<?>) ui);
@@ -99,17 +94,13 @@ public class MasterControlProgram implements ProcessorController,
             LOGGER.error(msg, e);
             ui.showError(msg + "\n" + e.getMessage());
          }
-         try {
-            processor.waitForDownloads();
-         } catch (InterruptedException e) {
-            LOGGER.warn("Interrupted while waiting for remaining downloads to finish.");
-         }
          exit();
-         return;
       }
 
       if (!args.isHeadless())
          ui.start();
+
+      LOGGER.info("BiNinjaClient out.");
    }
 
    @Override
@@ -200,7 +191,7 @@ public class MasterControlProgram implements ProcessorController,
          return false;
       }
 
-      ui.prepareDownload(metadata);
+//      ui.prepareDownload(metadata);
       download.addListener(listener);
       try {
          processor.startDownload(downloadChannel, download);
@@ -258,15 +249,15 @@ public class MasterControlProgram implements ProcessorController,
       if (stopping)
          return;
 
-      LOGGER.info("Freeing resources before terminating");
       stopping  = true;
+      LOGGER.info("Exiting the application - freeing recources");
 
       processor.close();
       ui.close();
 
       boolean closeNecessary = connection != null
                                && connection.getSocket().isConnected()
-                               && !connection.getSocket().isClosed();
+                               && !connection.isClosed();
       if (closeNecessary) {
          try {
             LOGGER.debug("Closing connection to " + connection.getInetAddress());
@@ -276,8 +267,8 @@ public class MasterControlProgram implements ProcessorController,
          }
       }
 
+      LOGGER.debug("Resources freed.");
       stopping = false;
-      LOGGER.info("BiNinjaClient out.");
    }
 
 }
