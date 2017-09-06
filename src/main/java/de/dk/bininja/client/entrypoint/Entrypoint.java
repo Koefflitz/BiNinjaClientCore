@@ -27,7 +27,7 @@ import de.dk.util.opt.ex.ArgumentParseException;
 public class Entrypoint {
    private static final Logger LOGGER = LoggerFactory.getLogger(Entrypoint.class);
 
-   private static final String GRAPHICAL_UI_CLASSNAME = "de.dk.bininja.client.ui.view.GUI";
+   private static final String GRAPHICAL_UI_CLASSNAME = "de.dk.bininja.client.ui.view.FXAdapter";
    private static final String COMMANDLINE_UI_CLASSNAME = "de.dk.bininja.client.ui.cli.ClientCli";
 
    public Entrypoint() {
