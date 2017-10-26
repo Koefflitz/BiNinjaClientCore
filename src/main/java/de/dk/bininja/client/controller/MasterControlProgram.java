@@ -31,6 +31,7 @@ import de.dk.bininja.ui.cli.Cli;
 import de.dk.util.channel.Channel;
 import de.dk.util.channel.ChannelDeclinedException;
 import de.dk.util.channel.Multiplexer;
+import de.dk.util.net.Connection;
 import de.dk.util.net.ConnectionListener;
 import de.dk.util.net.security.SessionKeyArrangement;
 
@@ -135,7 +136,7 @@ public class MasterControlProgram implements ProcessorController,
          try {
             connection.close(CONNECTION_CLOSE_TIMEOUT);
          } catch (IOException | InterruptedException e) {
-            LOGGER.warn("Error closing the connection to " + connection.getInetAddress(), e);
+            LOGGER.warn("Error closing the connection to " + connection.getAddress(), e);
          }
       }
 
@@ -217,7 +218,7 @@ public class MasterControlProgram implements ProcessorController,
 
    @Override
    public String getConnectionAsString() {
-      return connection.getInetAddress()
+      return connection.getAddress()
                        .toString();
    }
 
@@ -235,11 +236,11 @@ public class MasterControlProgram implements ProcessorController,
    }
 
    @Override
-   public void closed() {
+   public void closed(Connection connection) {
       if (stopping)
          return;
 
-      LOGGER.debug("Connection to server " + connection.getInetAddress() + " closed.");
+      LOGGER.debug("Connection to server " + connection.getAddress() + " closed.");
       ui.alert("Verbindung zum Server verloren.");
       ui.setConnected(false);
    }
@@ -260,10 +261,10 @@ public class MasterControlProgram implements ProcessorController,
                                && !connection.isClosed();
       if (closeNecessary) {
          try {
-            LOGGER.debug("Closing connection to " + connection.getInetAddress());
+            LOGGER.debug("Closing connection to " + connection.getAddress());
             connection.close(CONNECTION_CLOSE_TIMEOUT);
          } catch (IOException | InterruptedException e) {
-            LOGGER.warn("Error closing the connection " + connection.getInetAddress(), e);
+            LOGGER.warn("Error closing the connection " + connection.getAddress(), e);
          }
       }
 
