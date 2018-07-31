@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import de.dk.bininja.net.packet.download.DownloadHeaderPacket;
 import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.net.packet.download.DownloadRequestPacket;
-import de.dk.util.channel.Channel;
-import de.dk.util.channel.ChannelListener;
+import de.dk.ch.Channel;
+import de.dk.ch.ChannelListener;
 
 /**
  * @author David Koettlitz

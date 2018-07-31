@@ -21,7 +21,7 @@ import de.dk.bininja.net.packet.download.DownloadHeaderPacket;
 import de.dk.bininja.net.packet.download.DownloadPacket;
 import de.dk.bininja.net.packet.download.DownloadReadyPacket;
 import de.dk.bininja.net.packet.download.DownloadRequestPacket;
-import de.dk.util.channel.Channel;
+import de.dk.ch.Channel;
 
 /**
  * @author David Koettlitz

@@ -15,10 +15,10 @@ import de.dk.bininja.client.core.Logic;
 import de.dk.bininja.client.ui.UI;
 import de.dk.bininja.client.ui.UIController;
 import de.dk.bininja.opt.ParsedSecurityArguments;
-import de.dk.util.opt.ArgumentModel;
-import de.dk.util.opt.ArgumentParser;
-import de.dk.util.opt.ArgumentParserBuilder;
-import de.dk.util.opt.ex.ArgumentParseException;
+import de.dk.opt.ArgumentModel;
+import de.dk.opt.ArgumentParser;
+import de.dk.opt.ArgumentParserBuilder;
+import de.dk.opt.ex.ArgumentParseException;
 
 /**
  * @author David Koettlitz
